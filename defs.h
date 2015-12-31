@@ -10,9 +10,25 @@
 
 enum Piece {P, N, B, R, Q, K, _};
 
+/* Bits:
+   1 - capture
+   2 - castle
+   4 - promote
+   8 - en passant
+   16 - pawn moves 2 squares */
 struct move_t {
 	int from;
 	int to;
+	Piece promote;
+	int bits; // metadata about move
+};
+
+struct hist_t {
+	move_t move;
+	Piece capture;
+	int side_castle;
+	int xside_castle;
+	int ep;
 };
 
 extern std::array<int, 64> init_color;

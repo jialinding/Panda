@@ -24,11 +24,11 @@ std::array<Piece, 64> init_pieces = {
 
 std::vector<std::vector<int> > offsets = {
 	{},
-	{},
-	{},
-	{},
-	{},
-	{}
+	{-21, -19, -12, -8, 8, 12, 19, 21},
+	{-11, -9, 9, 11},
+	{-10, -1, 1, 10},
+	{-11, -10, -9, -1, 1, 9, 10, 11},
+	{-11, -10, -9, -1, 1, 9, 10, 11}
 };
 
 std::vector<bool> slide = {false, false, true, true, true, false};

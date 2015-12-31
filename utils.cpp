@@ -3,11 +3,28 @@
 
 #include "utils.h"
 
-move_t parseInput(std::string input) {
-	move_t move;
-	move.from = 64 - 8*atoi(input.substr(1,1).c_str()) + (input[0] - 'a');
-	move.to = 64 - 8*atoi(input.substr(3,1).c_str()) + (input[2] - 'a');
-	return move;
+int parseInput(std::string input, const std::vector<move_t>& moves) {
+	int from = 64 - 8*atoi(input.substr(1,1).c_str()) + (input[0] - 'a');
+	int to = 64 - 8*atoi(input.substr(3,1).c_str()) + (input[2] - 'a');
+
+	int move_index;
+	for (move_index = 0; move_index < moves.size(); ++move_index) {
+		if (moves[move_index].from == from && moves[move_index].to == to) {
+			if (input.length() == 5) {
+				char piece = input[4];
+				switch (piece) {
+					case 'N': return move_index;
+					case 'B': return move_index + 1;
+					case 'R': return move_index + 2;
+					case 'Q': return move_index + 3;
+				}
+			}
+
+			return move_index;
+		}
+	}
+
+	return -1;
 }
 
 std::string displayPiece(Piece piece, int color) {
