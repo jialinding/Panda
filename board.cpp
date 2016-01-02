@@ -75,29 +75,34 @@ bool Board::move(move_t move) {
 
 	// en passant captures the pawn
 	if (move.bits & 8) {
-		color[move.to - 8] = EMPTY;
-		pieces[move.to - 8] = _;
+		color[move.to + 8] = EMPTY;
+		pieces[move.to + 8] = _;
 	}
 
 	// moving pawn 2 squares forwards sets up en passant
 	if (move.bits & 16) {
-		ep = move.from + 8;
+		ep = move.from - 8;
 	} else {
 		ep = -1;
-	}
-
-	if (isCheck()) {
-		undoMove();
-		return false;
 	}
 
 	Board::rotateBoard();
 	std::swap(side, xside);
 	std::swap(side_castle, xside_castle);
+
+	if (isCheck(xside)) {
+		undoMove();
+		return false;
+	}
+
 	return true;
 }
 
 void Board::undoMove() {
+	Board::rotateBoard();
+	std::swap(side, xside);
+	std::swap(side_castle, xside_castle);
+
 	hist_t hist = move_history.top();
 	move_history.pop();
 
@@ -148,17 +153,20 @@ void Board::undoMove() {
 	}
 }
 
-bool Board::isAttacked(int square) {
+bool Board::isAttacked(int square, int attacking_side) {
 	int piece;
 	int attacked_square;
 	for (int sq = 0; sq < 64; sq++) {
-		if (color[sq] != xside) continue;
+		if (color[sq] != attacking_side) continue;
 		piece = pieces[sq];
 
 		// Pawns
 		if (piece == P) {
+			std::array<int, 2> pawn_capture;
+			if (attacking_side == side) pawn_capture = {-9, -11};
+			else pawn_capture = {9, 11};
 			// capture diagonally
-			for (int offset : {9, 11}) {
+			for (int offset : pawn_capture) {
 				attacked_square = mailbox[mailbox64[sq] + offset];
 				if (attacked_square == square) return true;
 			}
@@ -181,16 +189,17 @@ bool Board::isAttacked(int square) {
 	return false;
 }
 
-bool Board::isCheck() {
+bool Board::isCheck(int checked_side) {
 	int king_square = -1;
 	for (int sq = 0; sq < 64; sq++) {
-		if (color[sq] == side && pieces[sq] == K) {
+		if (color[sq] == checked_side && pieces[sq] == K) {
 			king_square = sq;
 			break;
 		}
 	}
 
-	return isAttacked(king_square);
+	int checking_side = (checked_side == WHITE) ? BLACK : WHITE;
+	return isAttacked(king_square, checking_side);
 }
 
 std::vector<move_t> Board::generateMoves() {
@@ -232,7 +241,7 @@ std::vector<move_t> Board::generateMoves() {
 			// capture diagonally
 			for (int offset : {-9, -11}) {
 				to = mailbox[mailbox64[sq] + offset];
-				if (to == -1 || color[to] != xside || to != ep) continue;
+				if (to == -1 || color[to] != xside) continue;
 				
 				// promotes on back rank
 				if (sq/8 == 1) {
@@ -274,7 +283,7 @@ std::vector<move_t> Board::generateMoves() {
 			if (side == WHITE) {
 				// kingside
 				if ((side_castle & 1) && color[61] == EMPTY && color[62] == EMPTY &&
-					!isAttacked(60) && !isAttacked(61) && !isAttacked(62)) {
+					!isAttacked(60, xside) && !isAttacked(61, xside) && !isAttacked(62, xside)) {
 					to = 62; // g1
 					move = {from, to, _, 2};
 					moves.push_back(move);
@@ -282,8 +291,8 @@ std::vector<move_t> Board::generateMoves() {
 
 				// queenside
 				if ((side_castle & 2) && color[57] == EMPTY && color[58] == EMPTY &&
-					color[59] == EMPTY && !isAttacked(58) && !isAttacked(59) &&
-					!isAttacked(60)) {
+					color[59] == EMPTY && !isAttacked(58, xside) && !isAttacked(59, xside) &&
+					!isAttacked(60, xside)) {
 					to = 58; // c1
 					move = {from, to, _, 2};
 					moves.push_back(move);
@@ -291,8 +300,8 @@ std::vector<move_t> Board::generateMoves() {
 			} else {
 				// queenside
 				if ((side_castle & 2) && color[60] == EMPTY && color[61] == EMPTY &&
-					color[62] == EMPTY && !isAttacked(59) && !isAttacked(60) &&
-					!isAttacked(61)) {
+					color[62] == EMPTY && !isAttacked(59, xside) && !isAttacked(60, xside) &&
+					!isAttacked(61, xside)) {
 					to = 61; // c8
 					move = {from, to, _, 2};
 					moves.push_back(move);
@@ -300,7 +309,7 @@ std::vector<move_t> Board::generateMoves() {
 
 				// kingside
 				if ((side_castle & 1) && color[57] == EMPTY && color[58] == EMPTY &&
-					!isAttacked(57) && !isAttacked(58) && !isAttacked(59)) {
+					!isAttacked(57, xside) && !isAttacked(58, xside) && !isAttacked(59, xside)) {
 					to = 57; // g8
 					move = {from, to, _, 2};
 					moves.push_back(move);

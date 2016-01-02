@@ -11,20 +11,20 @@ class Board {
 		Board();
 		bool move(move_t move);
 		void undoMove();
-		bool isAttacked(int square);
-		bool isCheck();
+		bool isAttacked(int square, int attacking_side);
+		bool isCheck(int checked_side);
 		std::vector<move_t> generateMoves();
 		void display();
 
 		int side;
 		int xside;
+		std::array<int, 64> color;
+		std::array<Piece, 64> pieces;
 
 	private:
 		int side_castle; // 1: kingside, 2: queenside
 		int xside_castle;
 		int ep;
-		std::array<int, 64> color;
-		std::array<Piece, 64> pieces;
 		std::stack<hist_t> move_history;
 
 		void rotateBoard();

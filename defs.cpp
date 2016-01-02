@@ -28,7 +28,8 @@ std::vector<std::vector<int> > offsets = {
 	{-11, -9, 9, 11},
 	{-10, -1, 1, 10},
 	{-11, -10, -9, -1, 1, 9, 10, 11},
-	{-11, -10, -9, -1, 1, 9, 10, 11}
+	{-11, -10, -9, -1, 1, 9, 10, 11},
+	{}
 };
 
 std::vector<bool> slide = {false, false, true, true, true, false};

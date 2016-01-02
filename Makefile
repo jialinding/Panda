@@ -1,7 +1,7 @@
 CC = g++
 CFLAGS = -g -Wall -std=c++11
 EXECUTABLE = panda
-SOURCES = main.cpp board.cpp defs.cpp utils.cpp
+SOURCES = main.cpp board.cpp defs.cpp utils.cpp search.cpp eval.cpp
 OBJECTS = $(SOURCES:.cpp=.o)
 
 all: $(EXECUTABLE)

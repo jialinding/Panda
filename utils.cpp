@@ -1,5 +1,6 @@
 #include <cstdlib>
 #include <algorithm>
+#include <iostream>
 
 #include "utils.h"
 
@@ -43,4 +44,22 @@ std::string displayPiece(Piece piece, int color) {
 	}
 
 	return output;
+}
+
+/* Currently only checks checkmate and stalemate */
+bool printResult(Board& board) {
+	for (move_t& move : board.generateMoves()) {
+		if (board.move(move)) {
+			board.undoMove();
+			return false;
+		}
+	}
+
+	board.display();
+	if (board.isCheck(board.side)) {
+		std::cout << (board.side ? "1 - 0" : "0 - 1") << std::endl; 
+	} else {
+		std::cout << "0.5 - 0.5" << std::endl;
+	}
+	return true;
 }
