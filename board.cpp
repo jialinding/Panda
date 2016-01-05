@@ -81,7 +81,7 @@ bool Board::move(move_t move) {
 
 	// moving pawn 2 squares forwards sets up en passant
 	if (move.bits & 16) {
-		ep = move.from - 8;
+		ep = 63 - (move.from - 8);
 	} else {
 		ep = -1;
 	}

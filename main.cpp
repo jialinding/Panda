@@ -18,7 +18,7 @@ int main(int argc, char const *argv[])
 	while (true) {
 		// computer move
 		if (board.side == BLACK) {
-			move_t computer_move = search.think(board, 4);
+			move_t computer_move = search.think(board, 3);
 			board.move(computer_move);
 		}
 

@@ -5,6 +5,8 @@
 #include "utils.h"
 
 int parseInput(std::string input, const std::vector<move_t>& moves) {
+	if (input.size() < 4) return -1;
+
 	int from = 64 - 8*atoi(input.substr(1,1).c_str()) + (input[0] - 'a');
 	int to = 64 - 8*atoi(input.substr(3,1).c_str()) + (input[2] - 'a');
 

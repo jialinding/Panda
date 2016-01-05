@@ -1,4 +1,5 @@
-#include <iostream> //debug
+#include <cstdlib> // rand
+
 #include "search.h"
 
 Search::Search() {
@@ -6,23 +7,28 @@ Search::Search() {
 }
 
 move_t Search::think(Board board, int depth) {
-	move_t bestMove;
+	// move_t bestMove;
+	std::vector<move_t> bestMoves;
 	int max = -100000;
 	int score;
 	for (move_t& move : board.generateMoves()) {
 		if (board.move(move)) {
-			std::cout << "think " << move.from << " " << move.to << std::endl;
 			score = -negaMax(board, depth-1);
-			std::cout << "score " << score << std::endl;
 			board.undoMove();
 			if (score > max) {
 				max = score;
-				bestMove = move;
+				// bestMove = move;
+				bestMoves.clear();
+				bestMoves.push_back(move);
+			} else if (score == max) {
+				bestMoves.push_back(move);
 			}
 		}
 	}
 
-	return bestMove;
+	// return bestMove;
+	int bestMoveIndex = rand() % bestMoves.size();
+	return bestMoves[bestMoveIndex];
 }
 
 int Search::negaMax(Board& board, int depth) {
