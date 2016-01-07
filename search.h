@@ -11,7 +11,8 @@ class Search {
 		move_t think(Board board, int depth);
 
 	private:
-		int negaMax(Board& board, int depth);
+		int alphaBeta(Board& board, int alpha, int beta, int depth);
+		int quiesce(Board& board, int alpha, int beta);
 		Eval eval;
 };
 

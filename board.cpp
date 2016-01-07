@@ -321,6 +321,60 @@ std::vector<move_t> Board::generateMoves() {
 	return moves;
 }
 
+std::vector<move_t> Board::generateCaptures() {
+	std::vector<move_t> moves;
+	int piece;
+	int from, to;
+	move_t move;
+	for (int sq = 0; sq < 64; sq++) {
+		if (color[sq] != side) continue;
+		from = sq;
+		piece = pieces[sq];
+		
+		// Pawns
+		if (piece == P) {
+			// capture diagonally
+			for (int offset : {-9, -11}) {
+				to = mailbox[mailbox64[sq] + offset];
+				if (to == -1 || color[to] != xside) continue;
+				
+				// promotes on back rank
+				if (sq/8 == 1) {
+					for (Piece piece : {N, B, R, Q}) {
+						move = {from, to, piece, 5};
+						moves.push_back(move);
+					}
+				} else if (to == ep) {
+					move = {from, to, _, 8};
+					moves.push_back(move);
+				} else {
+					move = {from, to, _, 1};
+					moves.push_back(move);
+				}				
+			}
+		}
+
+		// other pieces
+		else {
+			for (int offset : offsets[piece]) {
+				for (int i = 1;; i++) {
+					to = mailbox[mailbox64[sq] + i*offset];
+					if (to == -1) break; // can't move off board
+					if (color[to] == side) break; // can't capture own piece
+					if (color[to] == xside) {
+						move = {from, to, _, 1};
+						moves.push_back(move);
+						break; // can't slide past a capture
+					}
+					if (!slide[piece]) break; // stop if piece can't slide
+				}
+			}
+		}
+	}
+
+	return moves;
+}
+
 void Board::display() {
 	for (int sq = 0; sq < 64; sq++) {
 		if (color[sq] == EMPTY) {

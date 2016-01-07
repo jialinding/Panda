@@ -13,7 +13,7 @@ move_t Search::think(Board board, int depth) {
 	int score;
 	for (move_t& move : board.generateMoves()) {
 		if (board.move(move)) {
-			score = -negaMax(board, depth-1);
+			score = -alphaBeta(board, -100000, 100000, depth-1);
 			board.undoMove();
 			if (score > max) {
 				max = score;
@@ -31,19 +31,18 @@ move_t Search::think(Board board, int depth) {
 	return bestMoves[bestMoveIndex];
 }
 
-int Search::negaMax(Board& board, int depth) {
-	if (depth == 0) return eval.evaluate(board);
+int Search::alphaBeta(Board& board, int alpha, int beta, int depth) {
+	if (depth == 0) return quiesce(board, alpha, beta);
 
-	int max = -100000; // some low number
 	int score;
-	bool legal_moves = false;
-	
+	bool legal_moves = false;	
 	for (move_t& move : board.generateMoves()) {
 		if (board.move(move)) {
 			legal_moves = true;
-			score = -negaMax(board, depth-1);
+			score = -alphaBeta(board, -beta, -alpha, depth-1);
 			board.undoMove();
-			if (score > max) max = score;
+			if (score >= beta) return beta;
+			if (score > alpha) alpha = score;
 		}
 	}
 
@@ -52,5 +51,23 @@ int Search::negaMax(Board& board, int depth) {
 		else return 0; // stalemate
 	}
 
-	return max;
+	return alpha;
+}
+
+int Search::quiesce(Board& board, int alpha, int beta) {
+	int stand_pat = eval.evaluate(board);
+	if (stand_pat >= beta) return beta;
+	if (alpha < stand_pat) alpha = stand_pat;
+
+	int score;
+	for (move_t& move : board.generateCaptures()) {
+		if (board.move(move)) {
+			score = -quiesce(board, -beta, -alpha);
+			board.undoMove();
+			if (score >= beta) return beta;
+			if (score > alpha) alpha = score;
+		}
+	}
+
+	return alpha;
 }

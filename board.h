@@ -14,6 +14,7 @@ class Board {
 		bool isAttacked(int square, int attacking_side);
 		bool isCheck(int checked_side);
 		std::vector<move_t> generateMoves();
+		std::vector<move_t> generateCaptures();
 		void display();
 
 		int side;
