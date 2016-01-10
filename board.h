@@ -9,6 +9,7 @@
 class Board {
 	public:
 		Board();
+		int64_t hash();
 		bool move(move_t move);
 		void undoMove();
 		bool isAttacked(int square, int attacking_side);
@@ -27,6 +28,12 @@ class Board {
 		int xside_castle;
 		int ep;
 		std::stack<hist_t> move_history;
+		
+		// hash constants
+		int64_t hash_board[2][6][64];
+		int64_t hash_side;
+		int64_t hash_ep[64];
+		int64_t hash_castle[4][4];
 
 		void rotateBoard();
 };

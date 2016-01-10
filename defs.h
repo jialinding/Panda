@@ -8,6 +8,10 @@
 #define BLACK 1
 #define EMPTY 2
 
+#define EXACT_NODE 0
+#define ALPHA_NODE 1
+#define BETA_NODE 2
+
 enum Piece {P, N, B, R, Q, K, _};
 
 /* Bits:
@@ -29,6 +33,13 @@ struct hist_t {
 	int side_castle;
 	int xside_castle;
 	int ep;
+};
+
+struct tt_entry {
+	move_t best_move;
+	int depth;
+	int score;
+	int node_type;
 };
 
 extern std::array<int, 64> init_color;

@@ -1,5 +1,6 @@
 #include <algorithm>
 #include <iostream>
+#include <random>
 
 #include "board.h"
 #include "defs.h"
@@ -8,6 +9,38 @@
 Board::Board() : side(WHITE), xside(BLACK), side_castle(3), xside_castle(3), ep(-1) {
 	color = init_color;
 	pieces = init_pieces;
+
+	// initialize hash constants using a Mersenne twister to generate random 64-bit ints
+	std::mt19937_64 mt_rand(time(0));
+	for (int c = 0; c < 2; ++c) {
+		for (int p = 0; p < 6; ++p) {
+			for (int s = 0; s < 64; ++s) {
+				hash_board[c][p][s] = mt_rand();
+			}
+		}
+	}
+	hash_side = mt_rand();
+	for (int s = 0; s < 64; ++s) {
+		hash_ep[s] = mt_rand();
+	}
+	for (int sc = 0; sc < 4; ++sc) {
+		for (int xc = 0; xc < 4; ++xc) {
+			hash_castle[sc][xc] = mt_rand();
+		}
+	}
+}
+
+/* Zobrist hash that accounts for en passant and castling rights */
+int64_t Board::hash() {
+	int64_t hash = 0;
+	for (int sq = 0; sq < 64; ++sq) {
+		if (color[sq] == EMPTY) continue;
+		hash ^= hash_board[color[sq]][pieces[sq]][sq];
+	}
+	if (side == WHITE) hash ^= hash_side;
+	if (ep != -1) hash ^= hash_ep[ep];
+	hash ^= hash_castle[side_castle][xside_castle];
+	return hash;
 }
 
 bool Board::move(move_t move) {
