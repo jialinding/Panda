@@ -7,7 +7,7 @@
 class Eval {
 	public:
 		Eval();
-		int evaluate(Board board);
+		int evaluate(const Board& board);
 };
 
 #endif

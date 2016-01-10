@@ -42,6 +42,7 @@ struct tt_entry {
 	int node_type;
 };
 
+/* Board */
 extern std::array<int, 64> init_color;
 extern std::array<Piece, 64> init_pieces;
 
@@ -50,5 +51,12 @@ extern std::vector<bool> slide;
 
 extern std::array<int, 120> mailbox;
 extern std::array<int, 64> mailbox64;
+
+/* Evaluation */
+extern std::vector<int> piece_values;
+extern std::array<int, 64> pawn_pcsq;
+extern std::array<int, 64> knight_pcsq;
+extern std::array<int, 64> bishop_pcsq;
+extern std::array<int, 64> king_pcsq;
 
 #endif
