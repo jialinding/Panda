@@ -4,22 +4,28 @@
 
 #include "utils.h"
 
-int parseInput(std::string input, const std::vector<move_t>& moves) {
+int parseInput(std::string input, int side, const std::vector<move_t>& moves) {
 	if (input.size() < 4) return -1;
 
 	int from = 64 - 8*atoi(input.substr(1,1).c_str()) + (input[0] - 'a');
 	int to = 64 - 8*atoi(input.substr(3,1).c_str()) + (input[2] - 'a');
 
+	if (side == BLACK) {
+		from = 63 - from;
+		to = 63 - to;
+	}
+
 	int move_index;
 	for (move_index = 0; move_index < moves.size(); ++move_index) {
+		// std::cout << moves[move_index].from << moves[move_index].to << std::endl;
 		if (moves[move_index].from == from && moves[move_index].to == to) {
 			if (input.length() == 5) {
 				char piece = input[4];
 				switch (piece) {
-					case 'N': return move_index;
-					case 'B': return move_index + 1;
-					case 'R': return move_index + 2;
-					case 'Q': return move_index + 3;
+					case 'n': return move_index;
+					case 'b': return move_index + 1;
+					case 'r': return move_index + 2;
+					case 'q': return move_index + 3;
 				}
 			}
 
@@ -28,6 +34,28 @@ int parseInput(std::string input, const std::vector<move_t>& moves) {
 	}
 
 	return -1;
+}
+
+// Takes a move_t and returns in UCI format
+std::string parseMove(move_t move, int side) {
+	if (side == BLACK) {
+		move.from = 63 - move.from;
+		move.to = 63 - move.to;
+	}
+	std::string ret;
+	ret += (char)('a' + (move.from % 8));
+	ret += std::to_string(8 - (move.from / 8));
+	ret += (char)('a' + (move.to % 8));
+	ret += std::to_string(8 - (move.to / 8));
+	if (move.promote != _) {
+		switch (move.promote) {
+			case N: ret += 'n';
+			case B: ret += 'b';
+			case R: ret += 'r';
+			case Q: ret += 'q';
+		}
+	}
+	return ret;
 }
 
 std::string displayPiece(Piece piece, int color) {

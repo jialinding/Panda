@@ -1,6 +1,8 @@
 #include <cstdlib> // rand
+#include <iostream>
 
 #include "search.h"
+#include "utils.h"
 
 Search::Search() {
 	eval = Eval();
