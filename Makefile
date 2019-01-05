@@ -1,5 +1,6 @@
 CC = g++
 CFLAGS = -g -Wall -std=c++11
+CFLAGS += -I/usr/local/Cellar/boost/1.57.0/include
 EXECUTABLE = panda
 SOURCES = main.cpp board.cpp defs.cpp utils.cpp search.cpp eval.cpp
 OBJECTS = $(SOURCES:.cpp=.o)

@@ -418,6 +418,8 @@ void Board::display() {
 
 		if (sq % 8 == 7) {
 			std::cout << "\n";
+		} else {
+			std::cout << " ";
 		}
 	}
 }

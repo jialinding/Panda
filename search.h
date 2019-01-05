@@ -13,7 +13,7 @@ class Search {
 		move_t think(Board board, int depth);
 
 	private:
-		move_t alphaBetaRoot(Board& board, int depth);
+		search_t alphaBetaRoot(Board& board, int depth);
 		int alphaBeta(Board& board, int alpha, int beta, int depth);
 		int quiesce(Board& board, int alpha, int beta);
 		void tt_save(Board& board, move_t move, int depth, int score, int node_type);

@@ -27,6 +27,11 @@ struct move_t {
 	int bits; // metadata about move
 };
 
+struct search_t {
+	move_t move;
+	int score;
+};
+
 struct hist_t {
 	move_t move;
 	Piece capture;
@@ -58,5 +63,6 @@ extern std::array<int, 64> pawn_pcsq;
 extern std::array<int, 64> knight_pcsq;
 extern std::array<int, 64> bishop_pcsq;
 extern std::array<int, 64> king_pcsq;
+extern std::array<int, 64> flip;
 
 #endif

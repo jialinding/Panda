@@ -10,17 +10,23 @@ Search::Search() {
 
 /* Wrapper function that uses iterative deepening to find the best move */
 move_t Search::think(Board board, int depth) {
-	move_t bestMove;
+	search_t bestMove;
+	int score;
+	std::cout << "depth 0 " << eval.evaluate(board) << std::endl;
 	for (int d = 1; d <= depth; ++d) {
+		std::cout << "depth " << d << std::endl;
 		bestMove = alphaBetaRoot(board, d);
+		std::cout << "	bestmove " << parseMove(bestMove.move, board.side) << " " <<
+			bestMove.score << std::endl;
 	}
-	return bestMove;
+	return bestMove.move;
 }
 
 /* Root search function that returns a move instead of a score */
-move_t Search::alphaBetaRoot(Board& board, int depth) {
+search_t Search::alphaBetaRoot(Board& board, int depth) {
 	int max = -100000; // keeps maximum score
 	int score;
+	search_t bestMove; // to be returned
 	// move_t bestMove;
 	std::vector<move_t> bestMoves;
 
@@ -28,7 +34,10 @@ move_t Search::alphaBetaRoot(Board& board, int depth) {
 	if (tt.find(board.hash()) != tt.end()) {
 		tt_entry entry = tt[board.hash()];
 		if (entry.node_type == EXACT_NODE) {
-			if (entry.depth >= depth) return entry.best_move;
+			if (entry.depth >= depth) {
+				bestMove = {entry.best_move, entry.score};
+				return bestMove;
+			}
 			
 			// search the move from the transposition table first
 			if (board.move(entry.best_move)) {
@@ -46,6 +55,7 @@ move_t Search::alphaBetaRoot(Board& board, int depth) {
 		if (board.move(move)) {
 			score = -alphaBeta(board, -100000, 100000, depth-1);
 			board.undoMove();
+			std::cout << "	" << parseMove(move, board.side) << " " << score << std::endl;
 			if (score > max) {
 				max = score;
 				// bestMove = move;
@@ -60,13 +70,14 @@ move_t Search::alphaBetaRoot(Board& board, int depth) {
 	// return bestMove;
 	int bestMoveIndex = rand() % bestMoves.size();
 	tt_save(board, bestMoves[bestMoveIndex], depth, max, EXACT_NODE);
-	return bestMoves[bestMoveIndex];
+	bestMove = {bestMoves[bestMoveIndex], max};
+	return bestMove;
 }
 
 /* Search function using alpha-beta pruning in a negamax framework */
 int Search::alphaBeta(Board& board, int alpha, int beta, int depth) {
 	if (depth == 0) {
-		if (!board.isCheck(board.side)) return quiesce(board, alpha, beta);
+		if (!board.isCheck(board.side)) return eval.evaluate(board); // quiesce(board, alpha, beta);
 		else depth = 1;
 	}
 

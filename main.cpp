@@ -7,15 +7,16 @@
 #include "defs.h"
 #include "search.h"
 
+void pick_side(int& human_side, int& computer_side);
+
 // UCI compliant
-int main(int argc, char const *argv[])
+int main2(int argc, char const *argv[])
 {
 	Board board;
 	Search search;
 	
 	std::string input;
 	std::string startpos_moves;
-	move_t move;
 	srand(time(NULL));
 	while (std::getline(std::cin, input)) {
 		if (input == "uci") {
@@ -47,19 +48,24 @@ int main(int argc, char const *argv[])
 }
 
 // main function when playing from terminal/command line
-int main2(int argc, char const *argv[])
+int main(int argc, char const *argv[])
 {
 	Board board;
 	Search search;
 	
 	std::string input;
-	move_t move;
 	srand(time(NULL));
 	bool valid_move = true;
+
+	// determine which side to play
+	int human_side, computer_side;
+	pick_side(human_side, computer_side);
+
+	// play game
 	while (true) {
 		// computer move
-		if (board.side == BLACK) {
-			move_t computer_move = search.think(board, 4);
+		if (board.side == computer_side) {
+			move_t computer_move = search.think(board, 2);  // TODO: change depth
 			board.move(computer_move);
 		}
 
@@ -72,6 +78,7 @@ int main2(int argc, char const *argv[])
 			if (input == "q") break;
 			if (input == "n") {
 				board = Board();
+				pick_side(human_side, computer_side);
 				continue;
 			}
 			std::vector<move_t> moves = board.generateMoves();
@@ -83,4 +90,22 @@ int main2(int argc, char const *argv[])
 		if (printResult(board)) break;
 	}
 	return 0;
+}
+
+void pick_side(int& human_side, int& computer_side) {
+	std::string input;
+	while (true) {
+		std::cout << "Which side would you like to play (w or b)? ";
+		std::cin >> input;
+		if (input == "w") {
+			human_side = WHITE;
+			computer_side = BLACK;
+			break;
+		} else if (input == "b") {
+			human_side = BLACK;
+			computer_side = WHITE;
+			break;
+		}
+		std::cout << "Please enter a valid color" << std::endl;
+	}
 }
